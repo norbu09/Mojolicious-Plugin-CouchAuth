@@ -1,0 +1,94 @@
+Mojolicious::Plugin::CouchAuth
+==============================
+
+a very basic authentication plugin for Mojolicious using CouchDB
+documents for authentication.
+
+
+INSTALLATION
+------------
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+In your CouchDB add the following view:
+
+    {
+       "_id": "_design/site",
+       "language": "javascript",
+       "views": {
+           "user": {
+               "map": "function(doc) { if(doc.type == 'user-profile'){ emit(doc.username, doc); }}"
+           }
+       }
+    } 
+
+
+USAGE
+-----
+
+In your Mojolicious::Lite App add the following to load the plugin
+
+    plugin 'CouchAuth', { db => 'YOUR_APP_DB', port => 5984 };
+
+A user document would look something like this:
+
+    {
+       "_id": "c39618263399a2fd9c48c2f8d0007f1f",
+       "password": "G21tiwYbRQrbxL0nbwdwaM5XobLktdhz99N2riF0hfds",
+       "name": "Lenz Gschwendtner",
+       "type": "user-profile",
+       "username": "lenz",
+       "role": "admin"
+    }
+
+and your under function could look something like this:
+    
+    under sub {
+        my $self = shift;
+
+        # Authenticated
+        return 1 if $self->auth();
+
+        # Not authenticated
+        $self->flash( error => "Wrong username or password!" );
+        $self->redirect_to('/');
+        return;
+    };
+
+later in the code you can check the username with
+$self->session->{username} and test for the admin role with
+$self->is_admin.
+
+SUPPORT AND DOCUMENTATION
+-------------------------
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc Mojolicious::Plugin::CouchAuth
+
+You can also look for information at:
+
+    Github
+        https://github.com/norbu09
+
+    Search CPAN
+        http://search.cpan.org/dist/Mojolicious-Plugin-CouchAuth/
+
+
+LICENSE AND COPYRIGHT
+---------------------
+
+Copyright (C) 2011 Lenz Gschwendtner
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
