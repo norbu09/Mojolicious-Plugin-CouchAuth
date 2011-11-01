@@ -4,6 +4,8 @@ use Mojo::Base 'Mojolicious::Plugin';
 use Store::CouchDB;
 use Digest::SHA qw(sha256_base64);
 
+our $VERSION = '1.0';
+
 sub register {
     my ( $self, $app, $params ) = @_;
     my $couch = Store::CouchDB->new(
